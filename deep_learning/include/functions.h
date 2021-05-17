@@ -10,12 +10,22 @@ namespace Functions{
 		return res;
 	}
 
+	double square_1( const double value){
+		/* squares a number*/
+		return pow(value,2);
+	}
+
 	std::vector<double> leakyRelu(const std::vector<double> & values){
 		/* Apply leaky relu function to each element in the vector array */
 		std::vector<double> res;
 		for(unsigned i = 0; i < values.size(); ++i)
 			res.push_back( fmax(0.2*values[i], values[i]) );
 		return res;
+	}
+
+	double leakyRelu_1(const double value){
+		/* Apply the leaky relu function on a number */
+		return fmax(0.2*value, value);
 	}
 
 	std::vector<double> sigmoid( const std::vector<double> &values){
@@ -26,15 +36,11 @@ namespace Functions{
 		return res;
 	}
 
-	double sigmoid( const double value){
+	double sigmoid_1( const double value){
 		/* Apply the sigmoid function to a number*/
 			return 1/(1+exp(-value));
 	}
 
-	double square( const double value){
-		/* squares a number*/
-		return pow(value,2);
-	}
 }
 
 namespace Utils{
@@ -51,16 +57,16 @@ namespace Utils{
 	}
 
 	std::vector<double> chain( 
-			const std::vector<double> & values, // input values
-			std::vector<double (*)(double)> vectorOfFunctions // vector of function pointers
+			const std::vector<double> &values, // input values
+			std::vector<double (*)(double)> funcs // vector of function pointers
 			){
 		/* Pass the input values through the chain of functions 
 		 * The vector function pointer array is in sequential order of applying the function to the input */
 		std::vector<double> res;
 		for(unsigned i = 0; i < values.size(); ++i){
 			double temp = values[i];
-			for(unsigned j = 0; j < vectorOfFunctions.size(); ++j){
-				temp = vectorOfFunctions[j](temp);
+			for(unsigned j = 0; j < funcs.size(); ++j){
+				temp = funcs[j](temp);
 			}
 			res.push_back(temp);
 		}
@@ -82,4 +88,22 @@ namespace Utils{
 			res.push_back(df1dx[i] * df2du[i]);
 		return res;
 	}
+	
+	std::vector<double> chainDerivN(
+			const std::vector<double> &x,
+			std::vector< double (*)(double)> funcs
+			){
+		std::vector<double> f1_of_x, f2_of_x, df3du, df2du, df1dx, res;
+		for(unsigned i = 0; i < x.size(); ++i){
+			f1_of_x.push_back(funcs[0](x[i]));
+			f2_of_x.push_back(funcs[1](f1_of_x[i]));
+		}
+		df3du = Utils::derivative(f2_of_x, funcs[2]);
+		df2du = Utils::derivative(f1_of_x, funcs[1]);
+		df1dx = Utils::derivative(x, funcs[0]);
+		for(unsigned i = 0; i < x.size(); ++i)
+			res.push_back( df3du[i] * df2du[i] * df1dx[i] );
+		return res;
+	}
+
 }

@@ -56,7 +56,7 @@ int main(){
 
 	/* test for Utils::chain function */
 	out.clear();
-	std::vector<double (*)(double)> functions;
+	std::vector<double (*)(const double)> functions;
 	functions.push_back(f1);
 	functions.push_back(f2);
 	functions.push_back(f3);
@@ -73,9 +73,9 @@ int main(){
 
 	/* for verifying plots of chain derivative expression -> save to file*/
 	std::ofstream saveFile;
-	saveFile.open("../data/saveData.txt");
+	saveFile.open("../data/test1Data1.txt");
 	if(!saveFile.is_open()){
-		std::cerr << "File open error!" << std::endl;
+		std::cerr << "File open error! [Test1::Data1]" << std::endl;
 		exit(1);
 	}	
 
@@ -86,19 +86,39 @@ int main(){
 
 	std::vector<double> y1, y2, y3, y4;
 	functions.clear();
-	functions.push_back(Functions::sigmoid);
-	functions.push_back(Functions::square);
-	y1 = Utils::chain(x, functions);
-	y2 = Utils::chainDeriv2(x, Functions::sigmoid, Functions::square);
+	functions.push_back(Functions::sigmoid_1);
+	functions.push_back(Functions::square_1);
+	y1 = Utils::chain(x, functions); // gets square of sigmoid function
+	y2 = Utils::chainDeriv2(x, Functions::sigmoid_1, Functions::square_1); //gets the derivative of square of sigmoid function
 
 	functions.clear();
-	functions.push_back(Functions::square);
-	functions.push_back(Functions::sigmoid);
-	y3 = Utils::chain(x, functions);
-	y4 = Utils::chainDeriv2(x, Functions::square, Functions::sigmoid);
+	functions.push_back(Functions::square_1);
+	functions.push_back(Functions::sigmoid_1);
+	y3 = Utils::chain(x, functions); // gets sigmoid of square function
+	y4 = Utils::chainDeriv2(x, Functions::square_1, Functions::sigmoid_1); // gets the derivative of sigmoid of square function
 
 	for( unsigned i = 0; i < x.size(); ++i)
 		saveFile << x[i] << "\t" << y1[i] << "\t" << y2[i] << "\t" << y3[i] << "\t" << y4[i] << std::endl;
 	saveFile.close();	
+
+	/* for verifying plots of chain3 derivative -> save to file */
+	saveFile.open("../data/test1Data2.txt");
+	if(!saveFile.is_open()){
+		std::cerr << "File open error! [Test1::Data2]" << std::endl;
+		exit(1);
+	}	
+	functions.clear();
+	functions.push_back(Functions::leakyRelu_1);
+	functions.push_back(Functions::sigmoid_1);
+	functions.push_back(Functions::square_1);
+	// same x range as before [-3..3]
+	y1.clear();
+	y2.clear();
+	y1 = Utils::chain(x,functions); // f = square(sigmoid(leakyRelu))
+	y2 = Utils::chainDerivN(x, functions);
+	for( unsigned i = 0; i < x.size(); ++i)
+		saveFile << x[i] << "\t" << y1[i] << "\t" << y2[i] << std::endl;
+	saveFile.close();	
+
 	return 0;
 }
