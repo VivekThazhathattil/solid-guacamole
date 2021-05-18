@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
-#include "../deep_learning/include/functions.h"
 #include <fstream>
+#include "../deep_learning/include/utils.h"
+#include "../deep_learning/include/functions.h"
 
 void printOutput(const std::vector<double> &arr){
 	for(unsigned i = 0; i < arr.size(); ++i)

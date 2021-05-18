@@ -1,1 +1,4 @@
 tests/*.out
+tests/main
+tests/Makefile
+tests/obj
